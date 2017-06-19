@@ -19,7 +19,7 @@ Variable Name | Description | Example Value
 @DEName = "" | Configure Data Extension name here (not External Key) | "JourneyLog"
 @NumberOfRecords = 250 | Number of records to display in the email. Set to 0 to display up to 2000 max | 250
 @DateField = "" | Date field to order by descending. | "SFMC_DateCreatedCST"
-@Constant = "" | "Constant" field in Data Extension. | "ConstantForLog"
+@ConstantField = "" | "Constant" field in Data Extension. | "ConstantForLog"
 @Subject = "" | Email subjectline | CONCAT (@DEName," Log")
 @TimeZoneModifier = 17 | All dates in the Data Extension are recorded in CST. Change this value to display results in your time zone. | 17 (Sydney, Australia)
 @Logo = "" | Set a URL of your company logo here | <a href="https://upload.wikimedia.org/wikipedia/en/b/b6/Salesforce_Marketing_Cloud_Logo.png">Link</a>
