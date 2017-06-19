@@ -8,7 +8,7 @@
 SET @DEName = "" /* Configure Data Extension name here (not External Key). Example: JourneyLog */
 SET @NumberOfRecords = 250 /* Number of records to display in the email. Set to 0 to display up to 2000 max */
 SET @DateField = "" /* Date field to order by. Example: SFMC_DateCreatedCST */
-SET @Constant = "" /* The Data Extension that will be retrieved requires a numeric field called with a default value of 1.  This allows retrieval of all records in the Data Extension. Example: ConstantForLog */
+SET @ConstantField = "" /* The source Data Extension requires a numeric field with a default value of 1.  This allows retrieval of all records in the Data Extension. Example: ConstantForLog */
 
 /* Other configuration  */
 SET @NumberOfDaysNoEmails = 1 /* Used for Alert. 1 is 2 or more days ago */
@@ -28,7 +28,7 @@ SET @DEFieldDisplay3 = "" /* Header row value for the column */
 SET @DELookupField3 = "" /* Data Extension Field Name for the column */
 
 /* Lookup starts */
-SET @Rows = LOOKUPORDEREDROWS(@DEName, @NumberOfRecords, CONCAT(@DateField," ","DESC"), @Constant, "1")
+SET @Rows = LOOKUPORDEREDROWS(@DEName, @NumberOfRecords, CONCAT(@DateField," ","DESC"), @ConstantField, "1")
 SET @Number = ROWCOUNT(@Rows)
 
 /* Checking timestamp of latest record for Alert*/
