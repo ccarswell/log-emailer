@@ -10,7 +10,7 @@ This is primarily used Automations that sends a daily "Log" Data Extension to a 
 ## Installation in Salesforce Marketing Cloud 
 
 1) Locate source Data Extension to use
-2) Ensure this Data Extension has a "Date" type column (for ordering) and a "Constant" column. The Data Extension that will be retrieved requires a numeric field called with a default value of 1.  This allows retrieval of all records in the Data Extension. Example: ConstantForLog
+2) Ensure this Data Extension has a "Date" type column (for ordering) and a "Constant" column. This Data Extension requires a numeric field with a default value of 1.  This allows retrieval of all records in the Data Extension. Example: ConstantForLog
 3) Create an HTML based email and insert the main.html code
 4) Update the following variables to suit your solution:
 
