@@ -1,0 +1,165 @@
+<!--
+%%[ 
+
+/* This email template can be used to easily display the records of in a tabular format */
+/* This is useful for Automation that sends a daily "Log" Data Extension to a recipient list */
+
+/* Lookup configuration  */
+SET @DEName = "" /* Configure Data Extension name here (not External Key). Example: JourneyLog */
+SET @NumberOfRecords = 250 /* Number of records to display in the email. Set to 0 to display up to 2000 max */
+SET @DateField = "" /* Date field to order by. Example: SFMC_DateCreatedCST */
+SET @Constant = "" /* The Data Extension that will be retrieved requires a numeric field called with a default value of 1.  This allows retrieval of all records in the Data Extension. Example: ConstantForLog */
+
+/* Other configuration  */
+SET @NumberOfDaysNoEmails = 1 /* Used for Alert. 1 is 2 or more days ago */
+SET @Subject = CONCAT (@DEName," Log") /* Result: [Data Extension Name] Log */
+SET @AlertTest = false /* Used for testing alert SubjectLine and message */
+SET @TimeZoneModifier = 17 /* All dates in the Data Extension are recorded in CST.  Change this value to display results in your time zone.  Example: +17 = Sydney, Australia */
+SET @Logo = "https://upload.wikimedia.org/wikipedia/en/b/b6/Salesforce_Marketing_Cloud_Logo.png" /* Set a URL of your company logo here.
+
+/* Configuring Fields to be displayed */
+SET @DEFieldDisplay1 = "" /* Header row value for the column */
+SET @DELookupField1 = "" /* Data Extension Field Name for the column */
+
+SET @DEFieldDisplay2 = "" /* Header row value for the column */
+SET @DELookupField2 = "" /* Data Extension Field Name for the column */
+
+SET @DEFieldDisplay3 = "" /* Header row value for the column */
+SET @DELookupField3 = "" /* Data Extension Field Name for the column */
+
+/* Lookup starts */
+SET @Rows = LOOKUPORDEREDROWS(@DEName, @NumberOfRecords, CONCAT(@DateField," ","DESC"), @Constant, "1")
+SET @Number = ROWCOUNT(@Rows)
+
+/* Checking timestamp of latest record for Alert*/
+SET @Row = ROW(@Rows, 1)
+SET @DateFieldCST = FIELD(@Row,@DateField)
+SET @DateFieldAdjusted = DATEADD(@DateFieldCST,@TimeZoneModifier,"H")
+SET @LocalDate = DATEADD(Now(),@TimeZoneModifier,"H")
+SET @DateDiffAlert = DATEDIFF(@DateFieldAdjusted,@LocalDate, "D")
+
+/* Alerts for if there haven't been any records in more than a day */
+IF @DateDiffAlert > @NumberOfDaysNoEmails OR @AlertTest == true THEN 
+	SET @AlertText = "NO RECORDS HAVE BEEN FOUND SINCE YESTERDAY!"
+	SET @Subject = CONCAT(@Subject," ","Alert: NO RECORDS HAVE BEEN FOUND SINCE YESTERDAY!")
+ENDIF
+
+/* Set CSS colour indicator to odd for alternative row shading*/
+SET @indicator = "odd"
+
+]%%
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head><META http-equiv="Content-Type" content="text/html; charset=utf-8" /></head>
+<body>
+<div style="margin:0px">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="white" height="100%" style="font-family: proxima-nova,sans-serif">
+  <tr>
+    <td valign="top">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr height="87">
+          <td align="center" valign="top" bgcolor="#FFFFFF" height="87">
+            <table width="850" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="420" align="center"><img src="%%=v(@Logo)=%%" alt="Logo" width="378" height="134" border="0"></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td bgcolor="#231f20" height="22" style="font-size:22px; line-height: 22px; height:22px; mso-line-height-rule: exactly">&nbsp;</td>
+        </tr>
+        <tr>
+          <td bgcolor="#f26532" height="22" style="font-size:22px; line-height: 22px; height:22px; mso-line-height-rule: exactly">&nbsp;</td>
+        </tr>
+        <tr>
+          <td align="center" bgcolor="white"><br>
+            <table width="850" border="0" cellspacing="2" cellpadding="0">
+              <tr>
+                <td></td>
+              </tr>
+            </table>
+            <br>
+            <table width="850" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td valign="top" width="600" align="left">
+                   <!-- %%[ IF ISNULL(@AlertText) == false THEN ]%% -->
+						<span style="font-weight:bold;color: red; font-size:25px">%%=v(@AlertText)=%%</span>
+					<!-- %%[ ENDIF ]%% -->
+                  <h2>Last %%=v(@NumberOfRecords)=%% Records (DE: %%=v(@DEName)=%%)</h2>
+                  <table border="0" cellspacing="2" cellpadding="1">
+                    <tr>
+                      <td><b>Days Ago</b></td>
+                      <td><b>Date Field (Local)</b></td>
+                      <td><b>%%=v(@DEFieldDisplay1)=%%</b></td>
+                      <td><b>%%=v(@DEFieldDisplay2)=%%</b></td>
+                      <td><b>%%=v(@DEFieldDisplay3)=%%</b></td>
+                    </tr>
+					<tr height="3">
+					</tr>
+					<!--%%[
+                        FOR @index = 1 TO @Number DO
+                            SET @Row = ROW(@Rows, @index)
+                            SET @DateFieldCST = FIELD(@Row,@DateField)
+                            SET @DateFieldAdjustedValue = DATEADD(@DateFieldCST,@TimeZoneModifier,"H")
+                            SET @DELookupField1Value = FIELD(@Row,@DELookupField1)
+                            SET @DELookupField2Value = FIELD(@Row,@DELookupField2)
+                            SET @DELookupField3Value = FIELD(@Row,@DELookupField3)
+
+                            /* If the CSS indicator is set to odd use a white background color */
+
+                            IF @indicator == "odd" THEN
+                                SET @color = "#FFFFFF" 
+                                SET @indicator = "even" 
+
+                            /* If the CSS indicator is set to even use a gray background color */
+
+                            ELSE
+                                SET @color = "#EEEEEE" 
+                                SET @indicator = "odd" 
+                            ENDIF
+
+                            SET @LocalDateTime = DATEADD(Now(),@TimeZoneModifier,"H")
+                            SET @DateDiffResultValue = DATEDIFF(@DateFieldAdjustedValue,@LocalDateTime, "D")
+
+                            IF @DateDiffResultValue == 0 THEN
+                                SET @DateDiffResultValue = "Today"
+                            ELSEIF @DateDiffResultValue == 1 THEN
+                                SET @DateDiffResultValue = "Yesterday"
+                            ENDIF
+					]%%  -->
+                    <tr>
+						<td style="background-color:%%=v(@color)=%%">%%=v(@DateDiffResultValue)=%%</td>
+                    	<td style="background-color:%%=v(@color)=%%">%%=v(@DateFieldAdjustedValue)=%%</td>
+                    	<td style="background-color:%%=v(@color)=%%">%%=v(@DELookupField1Value)=%%</td>
+                    	<td style="background-color:%%=v(@color)=%%">%%=v(@DELookupField2Value)=%%</td>
+                    	<td style="background-color:%%=v(@color)=%%">%%=v(@DELookupField3Value)=%%</td>
+                    </tr>
+                    <!-- %%[ 
+					   NEXT @index 
+					]%%  -->
+				  </table>
+                </td>
+              </tr>
+            </table>
+            <img src="http://image.exct.net/lib/feca15757762047a/m/1/spacer.gif" alt="graphic" width="1" height="25" border="0">
+          </td>
+        </tr>
+        <tr height="12">
+          <td bgcolor="black" height="12"></td>
+        </tr>
+        <tr height="2">
+          <td bgcolor="#858e88" height="2"><table cellpadding="2" cellspacing="0" width="600" border="0" align="center"><tr><td><font face="verdana" size="1" color="#444444">This email was sent by: <b>%%Member_Busname%%</b><br>%%Member_Addr%% %%Member_City%%, %%Member_State%%, %%Member_PostalCode%%, %%Member_Country%% | <a href="%%profile_center_url%%" alias="Update Profile" style="text-decoration:none;color:#444444">Update Profile</a></font></td></tr></table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+</div>
+</body>
+</html>
+<custom name="opencounter" type="tracking" />
