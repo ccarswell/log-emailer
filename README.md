@@ -5,6 +5,8 @@ This email template can be used to easily display the records of in a tabular fo
 
 This is primarily used Automations that sends a daily "Log" Data Extension to a recipient list, but can be adapted to any purpose
 
+![alt text](https://raw.githubusercontent.com/ccarswell/log-emailer/master/screenshot.jpg)
+
 ## Installation in Salesforce Marketing Cloud 
 
 1) Locate source Data Extension to use
