@@ -38,13 +38,22 @@ SET @DateFieldAdjusted = DATEADD(@DateFieldCST,@TimeZoneModifier,"H")
 SET @LocalDate = DATEADD(Now(),@TimeZoneModifier,"H")
 SET @DateDiffAlert = DATEDIFF(@DateFieldAdjusted,@LocalDate, "D")
 
-/* Alerts for if there haven't been any records in more than a day */
-IF @DateDiffAlert > @NumberOfDaysNoEmails OR @AlertTest == true THEN 
-	SET @AlertText = "NO RECORDS HAVE BEEN FOUND SINCE YESTERDAY!"
-	SET @Subject = CONCAT(@Subject," ","Alert: NO RECORDS HAVE BEEN FOUND SINCE YESTERDAY!")
+SET @YEAR = DatePart(@SFMC_DateCreatedAUS,"Y")
+SET @MONTH = DatePart(@SFMC_DateCreatedAUS,"M")
+SET @DAY = DatePart(@SFMC_DateCreatedAUS,"D")
+SET @LastLogDate = CONCAT(@DAY,"/",@MONTH,"/",@YEAR)
+
+
+/* Alerts for if there haven't been any sends in over a day */
+IF (@DateDiffAlert > @NumberOfDaysNoEmails AND @DateDiffAlert < 2) OR @AlertTest == true THEN 
+ SET @AlertText = "NO EMAILS HAVE BEEN SENT SINCE YESTERDAY!"
+ SET @Subject = "Blackhawk Journey Alert: NO EMAILS HAVE BEEN SENT SINCE YESTERDAY!"
+ELSEIF @DateDiffAlert > 2 THEN
+ SET @AlertText = CONCAT("NO EMAILS HAVE BEEN SENT SINCE ",@LastLogDate)
+ SET @Subject = CONCAT("Blackhawk Journey Alert: NO EMAILS HAVE BEEN SENT SINCE ",@LastLogDate)	
 ENDIF
 
-/* Set CSS colour indicator to odd for alternative row shading*/
+/* Set CSS colour indicator to odd */
 SET @indicator = "odd"
 
 ]%%
