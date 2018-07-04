@@ -112,7 +112,9 @@ SET @indicator = "odd"
                         FOR @index = 1 TO @Number DO
                             SET @Row = ROW(@Rows, @index)
                             SET @DateFieldCST = FIELD(@Row,@DateField)
-                            SET @DateFieldAdjustedValue = DATEADD(@DateFieldCST,@TimeZoneModifier,"H")
+                            SET @DateFieldAdjustedValue = DATEADD(@DateFieldCST,@TimeZoneModifier,"H") */ Or use the below for timezone adjustment based on the user */
+                            */ SET @DateFieldAdjustedValue = SystemDateToLocalDate(@DateFieldCST) */
+
                             SET @DELookupField1Value = FIELD(@Row,@DELookupField1)
                             SET @DELookupField2Value = FIELD(@Row,@DELookupField2)
                             SET @DELookupField3Value = FIELD(@Row,@DELookupField3)
